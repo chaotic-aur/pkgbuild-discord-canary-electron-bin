@@ -1,0 +1,16 @@
+name: Mirroring
+
+on:
+  push:
+    branches: [master, actions]
+
+jobs:
+  to_aur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - uses: chaotic-aur/aur-master-sync-action@v1
+        with:
+          ssh_private_key: ${{ secrets. AUR_SSH_KEY  }}
