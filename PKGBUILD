@@ -15,7 +15,7 @@
 pkgname=discord-canary-electron-bin
 _pkgname=discord-canary
 pkgver=0.0.126
-pkgrel=1
+pkgrel=2
 pkgdesc="Discord Canary (popular voice + video app) using the system provided electron for increased security and performance"
 arch=('x86_64')
 provides=('discord-canary')
@@ -57,17 +57,18 @@ package() {
   # Thanks to the discord_arch_electron guy for this ;)
   # Thanks to https://aur.archlinux.org/packages/discord_arch_electron/#comment-776307 for the less-hacky fix.
   asar e $_tarname/resources/app.asar $_tarname/resources/app
-  sed -i "s|process.resourcesPath|'/usr/lib/$_pkgname'|" $_tarname/resources/app/app_bootstrap/buildInfo.js
+  sed -i "s|process.resourcesPath|'/usr/lib/$_pkgname/resources'|" $_tarname/resources/app/app_bootstrap/buildInfo.js
   sed -i "s|exeDir,|'/usr/share/pixmaps',|" $_tarname/resources/app/app_bootstrap/autoStart/linux.js
-  asar p $_tarname/resources/app $_tarname/resources/app.asar --unpack-dir '**'
-  rm -rf $_tarname/resources/app 
+  asar p $_tarname/resources/app $_tarname/resources/app.asar
+  rm -rf $_tarname/resources/app
   
+
   # Copy relevant data
-  cp -r "$_tarname"/resources/*  "$pkgdir"/usr/lib/$_pkgname/
+  cp -r "$_tarname"/resources/  "$pkgdir"/usr/lib/$_pkgname/
   
   # Create starter script for discord
   echo "#!/bin/sh" >> "$srcdir"/$_pkgname
-  echo "exec electron /usr/lib/$_pkgname/app.asar \$@" >> "$srcdir"/$_pkgname
+  echo "exec electron /usr/lib/$_pkgname/resources/app \$@" >> "$srcdir"/$_pkgname
   
   install -d "$pkgdir"/usr/{bin,share/{pixmaps,applications}}
   install -Dm 755 $_pkgname "$pkgdir"/usr/bin/$_pkgname
